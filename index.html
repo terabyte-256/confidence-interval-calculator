@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Confidence Interval</title>
+    <script>
+        function findSE(p, sample) {
+            return Math.sqrt((p * (1 - p)) / sample);
+        }
+
+        function findInterval(sample, p, multi) {
+            let SE = findSE(p, sample);
+            let doubleList = [];
+            console.log("predicted successes:\n" + (p * sample) + "\npredicted failures:\n" + ((1 - p) * sample)
+                + "\nprobability:\n" + p + "\nSE:\n" + SE + "\nmulti: "
+                + multi + "\nmargin:\n" + (SE * multi) + "\nwidth\n" + ((p + (SE * multi)) - (p - (SE * multi))));
+            doubleList.push(p - (SE * multi));
+            doubleList.push(p + (SE * multi));
+            console.log(doubleList);
+
+            // Display the results in the HTML
+            document.getElementById('results').innerHTML = `
+                <p>Predicted successes: ${p * sample}</p>
+                <p>Predicted failures: ${(1 - p) * sample}</p>
+                <p>Probability: ${p}</p>
+                <p>Standard Error: ${SE}</p>
+                <p>Multiplier: ${multi}</p>
+                <p>Margin of Error: ${SE * multi}</p>
+                <p>Confidence Interval: [${doubleList[0]}, ${doubleList[1]}]</p>
+            `;
+        }
+
+        function calculateInterval() {
+            const sample = parseInt(document.getElementById('sample').value);
+            const probability = parseFloat(document.getElementById('probability').value);
+            const multiplier = parseFloat(document.getElementById('multiplier').value);
+            findInterval(sample, probability, multiplier);
+        }
+    </script>
+</head>
+<body>
+    <h1>Find Confidence Interval</h1>
+    <form onsubmit="event.preventDefault(); calculateInterval();">
+        <label for="sample">Sample Size:</label>
+        <input type="number" id="sample" required><br>
+        <label for="probability">Probability:</label>
+        <input type="number" id="probability" step="0.01" required><br>
+        <label for="multiplier">Multiplier (e.g., 1.96 for 95% confidence):</label>
+        <input type="number" id="multiplier" step="0.01" required><br>
+        <button type="submit">Calculate</button>
+    </form>
+    <div id="results"></div>
+</body>
+</html>
